@@ -4,7 +4,7 @@ import sys
 import time
 import pygame as pg
 
-
+NUM_OF_BOMBS = 5 #爆弾の数
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -116,7 +116,7 @@ class Bomb:
     def __init__(self, color: tuple[int, int, int], rad: int):
         """
         引数に基づき爆弾円Surfaceを生成する
-        引数1 color：爆弾円の色タプル
+        引数1 color：　爆弾円の色タプル
         引数2 rad：爆弾円の半径
         """
         self.img = pg.Surface((2*rad, 2*rad))
@@ -147,6 +147,7 @@ def main():
     bird = Bird((300, 200))
     bomb = Bomb((255, 0, 0), 10)
     beam = None #Beam(bird)
+    bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -157,23 +158,28 @@ def main():
                 # スペースキー押下でBeamクラスのインスタンス生成
                 beam = Beam(bird)            
         screen.blit(bg_img, [0, 0])
-        
-        if bomb != None and bird.rct.colliderect(bomb.rct):
-            # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-            bird.change_img(8, screen)
-            pg.display.update()
-            time.sleep(1)
-            return
-        if beam != None and bomb != None and beam.rct.colliderect(bomb.rct):
-            beam = None
-            bomb = None
-            bird.change_img(6, screen)
-            pg.display.update()
+        for bomb in bombs:
+            if bird.rct.colliderect(bomb.rct):
+                # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
+                bird.change_img(8, screen)
+                fonto = pg.font.Font(None, 80)
+                txt = fonto.render("Game Over", True, (255, 0, 0))
+                screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
+                pg.display.update()
+                time.sleep(1)
+                return
+        for i, bomb in enumerate(bombs):
+            if beam != None and beam.rct.colliderect(bomb.rct):
+                beam = None
+                bombs[i] = None
+                bird.change_img(6, screen)
+                pg.display.update()
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        #beam.update(screen)   
-        if bomb is not None:
+        #beam.update(screen)
+        bombs = [bomb for bomb in bombs if bomb is not None]  # Noneでないものリスト
+        for bomb in bombs:
             bomb.update(screen)
         if beam is not None:
             beam.update(screen)
