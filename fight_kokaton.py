@@ -47,6 +47,7 @@ class Bird:
         (+5, +5): pg.transform.rotozoom(img, -45, 0.9),  # 右下
     }
 
+
     def __init__(self, xy: tuple[int, int]):
         """
         こうかとん画像Surfaceを生成する
@@ -56,6 +57,7 @@ class Bird:
         self.rct: pg.Rect = self.img.get_rect()
         self.rct.center = xy
 
+
     def change_img(self, num: int, screen: pg.Surface):
         """
         こうかとん画像を切り替え，画面に転送する
@@ -64,6 +66,7 @@ class Bird:
         """
         self.img = pg.transform.rotozoom(pg.image.load(f"fig/{num}.png"), 0, 0.9)
         screen.blit(self.img, self.rct)
+
 
     def update(self, key_lst: list[bool], screen: pg.Surface):
         """
@@ -99,6 +102,7 @@ class Beam:
         self.rct.left = bird.rct.right
         self.vx, self.vy = +5, 0
 
+
     def update(self, screen: pg.Surface):
         """
         ビームを速度ベクトルself.vx, self.vyに基づき移動させる
@@ -126,6 +130,7 @@ class Bomb:
         self.rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
         self.vx, self.vy = +5, +5
 
+
     def update(self, screen: pg.Surface):
         """
         爆弾を速度ベクトルself.vx, self.vyに基づき移動させる
@@ -150,14 +155,14 @@ class Score():
         self.score = 0
         
         self.centerx, self.centery = 100, HEIGHT-50
-        
+
+
     def update(self, screen: pg.Surface):
         """
         引数 screen：画面Surface
         """
         self.img = self.fonto.render(f"score:{self.score}", 0, self.color)
         screen.blit(self.img, [self.centerx, self.centery])
-
 
 
 def main():
